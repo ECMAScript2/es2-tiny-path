@@ -9,14 +9,14 @@ goog.provide( 'TinyPath.DEFINE.DEBUG' );
 TinyPath = function( urlOrigin, opt_absolutePathOfRoot ){
     // "https://example.com/"
     this._urlOrigin = urlOrigin +
-        urlOrigin.charAt( urlOrigin.length - 1 ) === '/' ? '' : '/';
+        ( urlOrigin.charAt( urlOrigin.length - 1 ) === '/' ? '' : '/' );
 
     if( opt_absolutePathOfRoot ){
         opt_absolutePathOfRoot = this.normalizeFilePath( opt_absolutePathOfRoot );
 
         // C:/User/xxx/xxx/
         this._absolutePathOfRoot = opt_absolutePathOfRoot +
-            opt_absolutePathOfRoot.charAt( opt_absolutePathOfRoot.length - 1 ) === '/' ? '' : '/';
+            ( opt_absolutePathOfRoot.charAt( opt_absolutePathOfRoot.length - 1 ) === '/' ? '' : '/' );
     };
 };
 
@@ -45,7 +45,7 @@ TinyPath.prototype.isAbsolutePath = function( filePathOrURL ){
  * @return {boolean}
  */
 TinyPath.prototype.isRootRelativePath = function( filePathOrURL ){
-    return filePathOrURL.charAt( 0 ) === '/' && this.isNetworkPathReference( filePathOrURL );
+    return filePathOrURL.charAt( 0 ) === '/' && !this.isNetworkPathReference( filePathOrURL );
 };
 
 /**----------------------------------------------------------------------------
