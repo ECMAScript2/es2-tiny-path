@@ -1,4 +1,5 @@
 goog.provide( 'TinyPath' );
+goog.provide( 'TinyPath.DEFINE.DEBUG' );
 
 /**
  * @constructor
@@ -44,7 +45,7 @@ TinyPath.prototype.isAbsolutePath = function( filePathOrURL ){
  * @return {boolean}
  */
 TinyPath.prototype.isRootRelativePath = function( filePathOrURL ){
-    return filePathOrURL.charAt( 0 ) === '/' && this.isNetworkPathReference( url );
+    return filePathOrURL.charAt( 0 ) === '/' && this.isNetworkPathReference( filePathOrURL );
 };
 
 /**----------------------------------------------------------------------------
