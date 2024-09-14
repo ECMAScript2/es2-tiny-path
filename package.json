@@ -1,0 +1,11 @@
+{
+  "name": "es2-tiny-path",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "itozyun <itozyun@gmail.com> (https://outcloud.blogspot.com/)",
+  "license": "MIT"
+}
