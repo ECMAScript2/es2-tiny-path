@@ -136,7 +136,7 @@ TinyPath.prototype.absoluteFilePathToSrcRootRelativeFilePath = function( filePat
             throw filePath + ' is not a absolute path!';
         };
     };
-    return this.normalizeFilePath( filePath ).substr( this._absolutePathOfRoot.length - 1 ); // -1 で "/" を残す
+    return this.normalizeFilePath( filePath ).substr( this._absolutePathOfRoot.length - 1 ); // -1 and leave the leading “/”.
 };
 
 /**
@@ -155,7 +155,7 @@ TinyPath.prototype.rootRelativeFilePathToAbsoluteFilePath = function( filePath )
         };
     };
 
-    return this._absolutePathOfRoot + filePath.substr( 1 ); // 頭に / がいる
+    return this._absolutePathOfRoot + filePath.substr( 1 ); // There is a “/” at the beginning.
 };
 
 /**
@@ -289,10 +289,10 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
         };
     };
 
-    var len = this._urlOrigin.length - 1;
+    var len = this._urlOrigin.length - 1; // -1 and leave the leading “/”.
 
     if( url.indexOf( this._urlOrigin ) === 0 ){
-        url = url.substr( len ); // -1 で "/" を残す
+        url = url.substr( len );
     } else if( this.isNetworkPathReference( this._urlOrigin ) ){
         if( url.indexOf( 'https:' + this._urlOrigin ) === 0 ){
             url = url.substring( 6, len );
@@ -301,7 +301,7 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
             url = url.substring( 5, len );
         };
     };
-    return url; // External Sites
+    return url; // External Site URL
 };
 
 /**
