@@ -40,14 +40,6 @@ TinyPath.prototype.isAbsolutePath = function( filePathOrURL ){
     return this.isAbsoluteURL( filePathOrURL );
 };
 
-/**
- * @param {string} filePathOrURL
- * @return {boolean}
- */
-TinyPath.prototype.isRootRelativePath = function( filePathOrURL ){
-    return filePathOrURL.charAt( 0 ) === '/' && !this.isNetworkPathReference( filePathOrURL );
-};
-
 /**----------------------------------------------------------------------------
  *   Convert
  */
@@ -94,14 +86,6 @@ TinyPath.prototype.urlToFilePath = function( url ){
 
 /**
  * @param {string} filePath
- * @return {string}
- */
-TinyPath.prototype.normalizeFilePath = function( filePath ){
-    return filePath.split( '\\' ).join( '/' );
-};
-
-/**
- * @param {string} filePath
  * @return {boolean}
  */
 TinyPath.prototype.isAbsoluteFilePath = function( filePath ){
@@ -117,8 +101,25 @@ TinyPath.prototype.isAbsoluteFilePath = function( filePath ){
  * @param {string} filePath
  * @return {boolean}
  */
+TinyPath.prototype.isRootRelativeFilePath = function( filePath ){
+    return filePath.charAt( 0 ) === '/';
+};
+
+
+/**
+ * @param {string} filePath
+ * @return {boolean}
+ */
 TinyPath.prototype.isRelativeFilePath = function( filePath ){
     return !this.isAbsoluteFilePath( filePath ) && !this.isRootRelativePath( filePath );
+};
+
+/**
+ * @param {string} filePath
+ * @return {string}
+ */
+TinyPath.prototype.normalizeFilePath = function( filePath ){
+    return filePath.split( '\\' ).join( '/' );
 };
 
 /**
@@ -263,6 +264,14 @@ TinyPath.prototype.isAbsoluteURL = function( url ){
  */
 TinyPath.prototype.isNetworkPathReference = function( url ){
     return url.substr( 0, 2 ) === '//';
+};
+
+/**
+ * @param {string} url
+ * @return {boolean}
+ */
+TinyPath.prototype.isRootRelativeURL = function( url ){
+    return url.charAt( 0 ) === '/' && !this.isNetworkPathReference( url );
 };
 
 /**
