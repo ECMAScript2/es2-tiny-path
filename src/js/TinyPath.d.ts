@@ -20,7 +20,7 @@ declare class TinyPath {
     toSrcRootRelativeFilePath(basePath:string, filePath:string):string;
 
 
-    isAbsolutePath(url:string):boolean;
+    isAbsoluteURL(url:string):boolean;
     isNetworkPathReference(url:string):boolean;
     isRootRelativeURL(url:string):boolean;
     isRelativeURL(url:string):boolean;
