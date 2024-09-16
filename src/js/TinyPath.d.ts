@@ -1,8 +1,8 @@
 declare class TinyPath {
     private _urlOrigin:string;
-    private _absolutePathOfRoot:string|undefined;
+    private _absolutePathOfSrcRoot:string|undefined;
 
-    constructor(urlOrigin:string, opt_absolutePathOfRoot:string|undefined);
+    constructor(urlOrigin:string, opt_absolutePathOfSrcRoot:string|undefined);
 
     isAbsolutePath(filePathOrURL:string):boolean;
 

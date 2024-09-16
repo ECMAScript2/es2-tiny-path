@@ -4,19 +4,19 @@ goog.provide( 'TinyPath.DEFINE.DEBUG' );
 /**
  * @constructor
  * @param {string} urlOrigin http://example.com or https://example.com or //example.com
- * @param {string=} opt_absolutePathOfRoot No need to set this parameter if you only want to convert URLs
+ * @param {string=} opt_absolutePathOfSrcRoot No need to set this parameter if you only want to convert URLs
  */
-TinyPath = function( urlOrigin, opt_absolutePathOfRoot ){
+TinyPath = function( urlOrigin, opt_absolutePathOfSrcRoot ){
     // "https://example.com/"
     this._urlOrigin = urlOrigin +
         ( urlOrigin.charAt( urlOrigin.length - 1 ) === '/' ? '' : '/' );
 
-    if( opt_absolutePathOfRoot ){
-        opt_absolutePathOfRoot = this.normalizeFilePath( opt_absolutePathOfRoot );
+    if( opt_absolutePathOfSrcRoot ){
+        opt_absolutePathOfSrcRoot = this.normalizeFilePath( opt_absolutePathOfSrcRoot );
 
         // C:/User/xxx/xxx/
-        this._absolutePathOfRoot = opt_absolutePathOfRoot +
-            ( opt_absolutePathOfRoot.charAt( opt_absolutePathOfRoot.length - 1 ) === '/' ? '' : '/' );
+        this._absolutePathOfSrcRoot = opt_absolutePathOfSrcRoot +
+            ( opt_absolutePathOfSrcRoot.charAt( opt_absolutePathOfSrcRoot.length - 1 ) === '/' ? '' : '/' );
     };
 };
 
@@ -24,6 +24,72 @@ TinyPath = function( urlOrigin, opt_absolutePathOfRoot ){
  * @private
  * @define {boolean} */
 TinyPath.DEFINE.DEBUG = goog.define( 'TinyPath.DEFINE.DEBUG' , false );
+
+/**----------------------------------------------------------------------------
+ *   private
+ */
+
+/**
+ * @private
+ * @param {string} basePath 
+ * @param {string} relativePath 
+ * @return {string} 
+ */
+function _relativePathToRootRelativePath( basePath, relativePath ){
+    var basePathElements = basePath.split( '/' );
+    basePathElements.pop();
+    basePathElements[ 0 ] === '' && basePathElements.shift();
+
+    if( relativePath.substr( 0, 2 ) === './' ){
+        relativePath = relativePath.substr( 2 );
+    };
+
+    // 相対リンク
+    while( relativePath.substr( 0, 3 ) === '../' ){
+        relativePath = relativePath.substr( 3 );
+        --basePathElements.length;
+    };
+    return basePathElements.join( '/' ) + '/' + relativePath;
+};
+
+/**
+ * @private
+ * @param {string} basePath
+ * @param {string} rootRelativePath
+ * @return {string}
+ */
+function _rootRelativePathToRelativePath( basePath, rootRelativePath ){
+    var link = [], i = 0, skipCompare = false,
+        basePathElements, baseName,
+        rootRelativePathElements, targetName,
+        depth, l;
+
+    basePathElements = basePath.split( '/' );
+    baseName = basePathElements.pop();
+
+    if( basePath === rootRelativePath ){
+        return baseName;
+    };
+
+    rootRelativePathElements = rootRelativePath.split( '/' );
+    targetName = rootRelativePathElements.pop();
+
+    for( depth = basePathElements.length, l = Math.max( rootRelativePathElements.length, depth ); i < l; ++i ){
+        if( skipCompare || rootRelativePathElements[ i ] !== basePathElements[ i ] ){
+            if( i < depth ){
+                link.unshift( '..' );
+            };
+            if( rootRelativePathElements[ i ] ){
+                link.push( rootRelativePathElements[ i ] );
+            };
+            skipCompare = true;
+        };
+    };
+    if( skipCompare || baseName !== targetName ){
+        link.push( targetName );
+    };
+    return link.join( '/' );
+};
 
 /**----------------------------------------------------------------------------
  *   Common
@@ -34,7 +100,7 @@ TinyPath.DEFINE.DEBUG = goog.define( 'TinyPath.DEFINE.DEBUG' , false );
  * @return {boolean}
  */
 TinyPath.prototype.isAbsolutePath = function( filePathOrURL ){
-    if( this._absolutePathOfRoot ){
+    if( this._absolutePathOfSrcRoot ){
         return this.isAbsoluteFilePath( filePathOrURL ) || this.isAbsoluteURL( filePathOrURL );
     };
     return this.isAbsoluteURL( filePathOrURL );
@@ -90,11 +156,11 @@ TinyPath.prototype.urlToFilePath = function( url ){
  */
 TinyPath.prototype.isAbsoluteFilePath = function( filePath ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this._absolutePathOfRoot ){
+        if( !this._absolutePathOfSrcRoot ){
             throw 'absoluteDirectoryPathOfRoot is empty!';
         };
     };
-    return filePath.indexOf( this._absolutePathOfRoot ) === 0;
+    return filePath.indexOf( this._absolutePathOfSrcRoot ) === 0;
 };
 
 /**
@@ -111,7 +177,7 @@ TinyPath.prototype.isRootRelativeFilePath = function( filePath ){
  * @return {boolean}
  */
 TinyPath.prototype.isRelativeFilePath = function( filePath ){
-    return !this.isAbsoluteFilePath( filePath ) && !this.isRootRelativePath( filePath );
+    return !this.isAbsoluteFilePath( filePath ) && !this.isRootRelativeFilePath( filePath );
 };
 
 /**
@@ -130,14 +196,14 @@ TinyPath.prototype.normalizeFilePath = function( filePath ){
  */
 TinyPath.prototype.absoluteFilePathToSrcRootRelativeFilePath = function( filePath ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this._absolutePathOfRoot ){
+        if( !this._absolutePathOfSrcRoot ){
             throw 'absoluteDirectoryPathOfRoot is empty!';
         };
         if( !this.isAbsoluteFilePath( filePath ) ){
             throw filePath + ' is not a absolute path!';
         };
     };
-    return this.normalizeFilePath( filePath ).substr( this._absolutePathOfRoot.length - 1 ); // -1 and leave the leading “/”.
+    return this.normalizeFilePath( filePath ).substr( this._absolutePathOfSrcRoot.length - 1 ); // -1 and leave the leading “/”.
 };
 
 /**
@@ -148,15 +214,15 @@ TinyPath.prototype.absoluteFilePathToSrcRootRelativeFilePath = function( filePat
  */
 TinyPath.prototype.rootRelativeFilePathToAbsoluteFilePath = function( filePath ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this._absolutePathOfRoot ){
+        if( !this._absolutePathOfSrcRoot ){
             throw 'absoluteDirectoryPathOfRoot is empty!';
         };
-        if( !this.isRootRelativePath( filePath ) ){
+        if( !this.isRootRelativeFilePath( filePath ) ){
             throw filePath + ' is not a root relative path!';
         };
     };
 
-    return this._absolutePathOfRoot + filePath.substr( 1 ); // There is a “/” at the beginning.
+    return this._absolutePathOfSrcRoot + filePath.substr( 1 ); // There is a “/” at the beginning.
 };
 
 /**
@@ -166,28 +232,16 @@ TinyPath.prototype.rootRelativeFilePathToAbsoluteFilePath = function( filePath )
  */
 TinyPath.prototype.relativeFilePathToSrcRootRelativeFilePath = function( basePath, relativeFilePath ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this.isRootRelativePath( basePath ) ){
+        if( !this.isRootRelativeFilePath( basePath ) ){
             throw basePath + ' is not a root relative path!';
         };
-        if( this.isRootRelativePath( relativeFilePath ) || this.isAbsolutePath( relativeFilePath ) ){
+        // この関数は relativeURLToRootRelativeURL からも呼ばれる
+        if( this.isRootRelativeFilePath( relativeFilePath ) || this.isAbsolutePath( relativeFilePath ) ){
             throw relativeFilePath + ' is not a relative path!';
         };
     };
 
-    var basePathElements = basePath.split( '/' );
-    basePathElements.pop();
-    basePathElements[ 0 ] === '' && basePathElements.shift();
-
-    if( relativeFilePath.substr( 0, 2 ) === './' ){
-        relativeFilePath = relativeFilePath.substr( 2 );
-    };
-
-    // 相対リンク
-    while( relativeFilePath.substr( 0, 3 ) === '../' ){
-        relativeFilePath = relativeFilePath.substr( 3 );
-        --basePathElements.length;
-    };
-    return basePathElements.join( '/' ) + '/' + relativeFilePath;
+    return _relativePathToRootRelativePath( basePath, relativeFilePath );
 };
 
 /**
@@ -197,44 +251,14 @@ TinyPath.prototype.relativeFilePathToSrcRootRelativeFilePath = function( basePat
  */
 TinyPath.prototype.srcRootRelativeFilePathToRelativeFilePath = function( basePath, rootRelativeFilePath ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this.isRootRelativePath( basePath ) ){
+        if( !this.isRootRelativeFilePath( basePath ) ){
             throw basePath + ' is not a root relative path!';
         };
-        if( !this.isRootRelativePath( rootRelativeFilePath ) ){
+        if( !this.isRootRelativeFilePath( rootRelativeFilePath ) ){
             throw rootRelativeFilePath + ' is not a root relative path!';
         };
     };
-
-    var link = [], i = 0, skipCompare = false,
-        basePathElements, baseName,
-        rootRelativeFilePathElements, targetName,
-        depth, l;
-
-    basePathElements = basePath.split( '/' );
-    baseName = basePathElements.pop();
-
-    if( basePath === rootRelativeFilePath ){
-        return baseName;
-    };
-
-    rootRelativeFilePathElements = rootRelativeFilePath.split( '/' );
-    targetName = rootRelativeFilePathElements.pop();
-
-    for( depth = basePathElements.length, l = Math.max( rootRelativeFilePathElements.length, depth ); i < l; ++i ){
-        if( skipCompare || rootRelativeFilePathElements[ i ] !== basePathElements[ i ] ){
-            if( i < depth ){
-                link.unshift( '..' );
-            };
-            if( rootRelativeFilePathElements[ i ] ){
-                link.push( rootRelativeFilePathElements[ i ] );
-            };
-            skipCompare = true;
-        };
-    };
-    if( skipCompare || baseName !== targetName ){
-        link.push( targetName );
-    };
-    return link.join( '/' );
+    return _rootRelativePathToRelativePath( basePath, rootRelativeFilePath );
 };
 
 /**
@@ -279,7 +303,7 @@ TinyPath.prototype.isRootRelativeURL = function( url ){
  * @return {boolean}
  */
 TinyPath.prototype.isRelativeURL = function( url ){
-    return !this.isAbsoluteURL( url ) && !this.isRootRelativePath( url );
+    return !this.isAbsoluteURL( url ) && !this.isRootRelativeURL( url );
 };
 
 /**
@@ -293,7 +317,7 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
         if( !this.isAbsoluteURL( url ) ){
             throw url + ' is not a absolute path!';
         };
-        if( this.isRootRelativePath( url ) ){
+        if( this.isRootRelativeURL( url ) ){
             throw url + ' is a root relative path!';
         };
     };
@@ -320,17 +344,17 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
  */
 TinyPath.prototype.relativeURLToRootRelativeURL = function( basePath, relativeURL ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this.isRootRelativePath( basePath ) ){
+        if( !this.isRootRelativeURL( basePath ) ){
             throw basePath + ' is not a root relative path!';
         };
-        if( this.isRootRelativePath( relativeURL ) || this.isAbsoluteURL( relativeURL ) ){
+        if( this.isRootRelativeURL( relativeURL ) || this.isAbsoluteURL( relativeURL ) ){
             throw relativeURL + ' is not a relative path!';
         };
     };
 
     var targetHash      = relativeURL.substr( relativeURL.indexOf( '#' ) );
     var rootRelativeURL = this.filePathToURL(
-                              this.relativeFilePathToSrcRootRelativeFilePath(
+                              _relativePathToRootRelativePath(
                                   this.urlToFilePath( basePath ),
                                   this.urlToFilePath( relativeURL )
                               )
@@ -349,17 +373,17 @@ TinyPath.prototype.relativeURLToRootRelativeURL = function( basePath, relativeUR
  */
 TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelativeURL ){
     if( TinyPath.DEFINE.DEBUG ){
-        if( !this.isRootRelativePath( basePath ) ){
+        if( !this.isRootRelativeURL( basePath ) ){
             throw basePath + ' is not a root relative path!';
         };
-        if( !this.isRootRelativePath( rootRelativeURL ) ){
+        if( !this.isRootRelativeURL( rootRelativeURL ) ){
             throw rootRelativeURL + ' is not a root relative path!';
         };
     };
 
     var targetHash  = rootRelativeURL.substr( rootRelativeURL.indexOf( '#' ) );
     var relativeURL = this.filePathToURL(
-                          this.srcRootRelativeFilePathToRelativeFilePath(
+                          _rootRelativePathToRelativePath(
                               this.urlToFilePath( basePath ),
                               this.urlToFilePath( rootRelativeURL )
                           )
