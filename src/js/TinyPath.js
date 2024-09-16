@@ -132,7 +132,7 @@ TinyPath.prototype.filePathToURL = function( filePath ){
 TinyPath.prototype.urlToFilePath = function( url ){
     if( TinyPath.DEFINE.DEBUG ){
         if( this.isAbsoluteURL( url ) ){
-            throw url + ' is not a root relative path or relative path!';
+            throw url + ' is not a root relative path or relative URL!';
         };
     };
 
@@ -307,7 +307,7 @@ TinyPath.prototype.isRelativeURL = function( url ){
 };
 
 /**
- * Absolute path => Source root relative path
+ * Absolute URL => Source root relative UEL
  * 
  * @param {string} url
  * @return {string}
@@ -315,10 +315,10 @@ TinyPath.prototype.isRelativeURL = function( url ){
 TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
     if( TinyPath.DEFINE.DEBUG ){
         if( !this.isAbsoluteURL( url ) ){
-            throw url + ' is not a absolute path!';
+            throw url + ' is not a absolute URL!';
         };
         if( this.isRootRelativeURL( url ) ){
-            throw url + ' is a root relative path!';
+            throw url + ' is a root relative URL!';
         };
     };
 
@@ -337,6 +337,26 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
     return url; // External Site URL
 };
 
+
+/**
+ * Source root relative URL => Absolute URL
+ * 
+ * @param {string} url
+ * @return {string}
+ */
+TinyPath.prototype.rootRelativeURLToAbsoluteURL = function( url ){
+    if( TinyPath.DEFINE.DEBUG ){
+        if( !this._urlOrigin ){
+            throw 'urlOrigin is empty!';
+        };
+        if( !this.isRootRelativeURL( url ) ){
+            throw url + ' is not a root relative URL!';
+        };
+    };
+
+    return this._urlOrigin + url.substr( 1 ); // There is a “/” at the beginning.
+};
+
 /**
  * @param {string} basePath
  * @param {string} relativeURL
@@ -345,10 +365,10 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
 TinyPath.prototype.relativeURLToRootRelativeURL = function( basePath, relativeURL ){
     if( TinyPath.DEFINE.DEBUG ){
         if( !this.isRootRelativeURL( basePath ) ){
-            throw basePath + ' is not a root relative path!';
+            throw basePath + ' is not a root relative URL!';
         };
         if( this.isRootRelativeURL( relativeURL ) || this.isAbsoluteURL( relativeURL ) ){
-            throw relativeURL + ' is not a relative path!';
+            throw relativeURL + ' is not a relative URL!';
         };
     };
 
@@ -374,10 +394,10 @@ TinyPath.prototype.relativeURLToRootRelativeURL = function( basePath, relativeUR
 TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelativeURL ){
     if( TinyPath.DEFINE.DEBUG ){
         if( !this.isRootRelativeURL( basePath ) ){
-            throw basePath + ' is not a root relative path!';
+            throw basePath + ' is not a root relative URL!';
         };
         if( !this.isRootRelativeURL( rootRelativeURL ) ){
-            throw rootRelativeURL + ' is not a root relative path!';
+            throw rootRelativeURL + ' is not a root relative URL!';
         };
     };
 
