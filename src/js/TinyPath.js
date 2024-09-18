@@ -434,7 +434,7 @@ TinyPath.prototype.toRootRelativeURL = function( basePath, url ){
  * @return {string}
  */
 TinyPath.prototype.toRelativeURL = function( basePath, url ){
-    var maybeRootRelativeURL;
+    var maybeRootRelativeURL = url;
 
     if( this.isAbsoluteURL( url ) ){
         maybeRootRelativeURL = this.absoluteURLToRootRelativeURL( url );
@@ -442,11 +442,10 @@ TinyPath.prototype.toRelativeURL = function( basePath, url ){
         if( maybeRootRelativeURL === url ){
             return url; // External URL
         };
+        return this.rootRelativeURLToRelativeURL( basePath, maybeRootRelativeURL );
     };
 
     return this.isRootRelativeURL( url )
                ? this.rootRelativeURLToRelativeURL( basePath, url )
-         : this.isRootRelativeURL( maybeRootRelativeURL )
-               ? this.rootRelativeURLToRelativeURL( basePath, maybeRootRelativeURL )
                : url;
 };
