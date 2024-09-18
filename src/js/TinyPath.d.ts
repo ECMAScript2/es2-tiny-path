@@ -29,4 +29,5 @@ declare class TinyPath {
     relativeURLToRootRelativeURL(basePath:string, relativeURL:string):string;
     rootRelativeURLToRelativeURL(basePath:string, rootRelativeURL:string):string;
     toRootRelativeURL(basePath:string, url:string):string;
+    toRelativeURL(basePath:string, url:string):string;
 }

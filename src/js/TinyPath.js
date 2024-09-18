@@ -427,3 +427,26 @@ TinyPath.prototype.toRootRelativeURL = function( basePath, url ){
                ? this.absoluteURLToRootRelativeURL( url )
                : url;
 };
+
+/**
+ * @param {string} basePath
+ * @param {string} url
+ * @return {string}
+ */
+TinyPath.prototype.toRelativeURL = function( basePath, url ){
+    var maybeRootRelativeURL;
+
+    if( this.isAbsoluteURL( url ) ){
+        maybeRootRelativeURL = this.absoluteURLToRootRelativeURL( url );
+
+        if( maybeRootRelativeURL === url ){
+            return url; // External URL
+        };
+    };
+
+    return this.isRootRelativeURL( url )
+               ? this.rootRelativeURLToRelativeURL( basePath, url )
+         : this.isRootRelativeURL( maybeRootRelativeURL )
+               ? this.rootRelativeURLToRelativeURL( basePath, maybeRootRelativeURL )
+               : url;
+};
