@@ -24,6 +24,7 @@ declare class TinyPath {
     isNetworkPathReference(url:string):boolean;
     isRootRelativeURL(url:string):boolean;
     isRelativeURL(url:string):boolean;
+    clearHash(url:string):string;
     absoluteURLToRootRelativeURL(url:string):string;
     rootRelativeURLToAbsoluteURL(url:string):string;
     relativeURLToRootRelativeURL(basePath:string, relativeURL:string):string;

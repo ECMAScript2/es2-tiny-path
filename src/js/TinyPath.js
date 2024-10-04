@@ -136,7 +136,7 @@ TinyPath.prototype.urlToFilePath = function( url ){
         };
     };
 
-    var urlElements = url.split( '#' )[ 0 ].split( '/' );
+    var urlElements = this.clearHash( url ).split( '/' );
 
     // "/" => ["", ""] => "/index.html"
     // "/index.html/" => ["", "index.html", ""] => "/index.html/index.html"
@@ -304,6 +304,14 @@ TinyPath.prototype.isRootRelativeURL = function( url ){
  */
 TinyPath.prototype.isRelativeURL = function( url ){
     return !this.isAbsoluteURL( url ) && !this.isRootRelativeURL( url );
+};
+
+/**
+ * @param {string} url
+ * @return {string}
+ */
+TinyPath.prototype.clearHash = function( url ){
+    return url.split( '#' )[ 0 ];
 };
 
 /**
