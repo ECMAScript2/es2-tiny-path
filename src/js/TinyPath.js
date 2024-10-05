@@ -415,7 +415,11 @@ TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelati
         };
     };
 
-    var targetHash  = rootRelativeURL.substr( rootRelativeURL.indexOf( '#' ) );
+    var hashIndex = rootRelativeURL.indexOf( '#' ), targetHash;
+
+    if( hashIndex !== -1 ){
+        targetHash = rootRelativeURL.substr( hashIndex );
+    };
     var relativeURL = this.filePathToURL(
                           _rootRelativePathToRelativePath(
                               this.urlToFilePath( basePath ),
