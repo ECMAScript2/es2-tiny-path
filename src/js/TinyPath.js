@@ -386,13 +386,17 @@ TinyPath.prototype.relativeURLToRootRelativeURL = function( basePath, relativeUR
         };
     };
 
-    var targetHash      = relativeURL.substr( relativeURL.indexOf( '#' ) );
-    var rootRelativeURL = this.filePathToURL(
-                              _relativePathToRootRelativePath(
-                                  this.urlToFilePath( basePath ),
-                                  this.urlToFilePath( relativeURL )
-                              )
-                          );
+    var hashIndex = relativeURL.indexOf( '#' ), targetHash, rootRelativeURL;
+
+    if( hashIndex !== -1 ){
+        targetHash = relativeURL.substr( hashIndex );
+    };
+    rootRelativeURL = this.filePathToURL(
+                          _relativePathToRootRelativePath(
+                              this.urlToFilePath( basePath ),
+                              this.urlToFilePath( relativeURL )
+                          )
+                      );
 
     if( targetHash ){
         rootRelativeURL += targetHash;
@@ -415,17 +419,17 @@ TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelati
         };
     };
 
-    var hashIndex = rootRelativeURL.indexOf( '#' ), targetHash;
+    var hashIndex = rootRelativeURL.indexOf( '#' ), targetHash, relativeURL;
 
     if( hashIndex !== -1 ){
         targetHash = rootRelativeURL.substr( hashIndex );
     };
-    var relativeURL = this.filePathToURL(
-                          _rootRelativePathToRelativePath(
-                              this.urlToFilePath( basePath ),
-                              this.urlToFilePath( rootRelativeURL )
-                          )
-                      );
+    relativeURL = this.filePathToURL(
+                      _rootRelativePathToRelativePath(
+                          this.urlToFilePath( basePath ),
+                          this.urlToFilePath( rootRelativeURL )
+                      )
+                  );
 
     if( targetHash ){
         relativeURL += targetHash;
