@@ -38,6 +38,7 @@ TinyPath.DEFINE.DEBUG = goog.define( 'TinyPath.DEFINE.DEBUG' , false );
 function _relativePathToRootRelativePath( basePath, relativePath ){
     var originalRelativePath = relativePath;
     var basePathElements = basePath.split( '/' );
+
     basePathElements.pop();
     basePathElements[ 0 ] === '' && basePathElements.shift();
 
@@ -47,15 +48,16 @@ function _relativePathToRootRelativePath( basePath, relativePath ){
 
     // 相対リンク
     while( relativePath.substr( 0, 3 ) === '../' ){
-        relativePath = relativePath.substr( 3 );
-        --basePathElements.length;
         if( TinyPath.DEFINE.DEBUG ){
             if( !basePathElements.length ){
                 throw 'Failed _relativePathToRootRelativePath! base:' + basePath + ' target:' + originalRelativePath;
             };
         };
+        relativePath = relativePath.substr( 3 );
+        --basePathElements.length;
     };
-    return '/' + basePathElements.join( '/' ) + '/' + relativePath;
+
+    return ( basePathElements.length ? '/' + basePathElements.join( '/' ) : '' ) + '/' + relativePath;
 };
 
 /**
