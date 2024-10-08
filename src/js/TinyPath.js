@@ -31,9 +31,9 @@ TinyPath.DEFINE.DEBUG = goog.define( 'TinyPath.DEFINE.DEBUG' , false );
 
 /**
  * @private
- * @param {string} basePath 
- * @param {string} relativePath 
- * @return {string} 
+ * @param {string} basePath root relative path
+ * @param {string} relativePath
+ * @return {string}
  */
 function _relativePathToRootRelativePath( basePath, relativePath ){
     var originalRelativePath = relativePath;
