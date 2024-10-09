@@ -1,5 +1,5 @@
 goog.provide( 'TinyPath' );
-goog.provide( 'TinyPath.DEFINE.DEBUG' );
+// goog.provide( 'TinyPath.DEFINE.DEBUG' );
 
 /**
  * @constructor
@@ -7,19 +7,19 @@ goog.provide( 'TinyPath.DEFINE.DEBUG' );
  * @param {string=} opt_absolutePathOfSrcRoot No need to set this parameter if you only want to convert URLs
  */
 TinyPath = function( urlOrigin, opt_absolutePathOfSrcRoot ){
-    // "https://example.com/"
+    /** @const {string} */
     this._urlOrigin = urlOrigin +
         ( urlOrigin.charAt( urlOrigin.length - 1 ) === '/' ? '' : '/' );
 
     if( opt_absolutePathOfSrcRoot ){
         opt_absolutePathOfSrcRoot = this.normalizeFilePath( opt_absolutePathOfSrcRoot );
 
-        // C:/User/xxx/xxx/
+        /** @const {string} 'C:/User/xxx/xxx/' */
         this._absolutePathOfSrcRoot = opt_absolutePathOfSrcRoot +
             ( opt_absolutePathOfSrcRoot.charAt( opt_absolutePathOfSrcRoot.length - 1 ) === '/' ? '' : '/' );
     };
 };
-
+TinyPath.DEFINE = {};
 /**
  * @private
  * @define {boolean} */
