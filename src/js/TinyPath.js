@@ -275,7 +275,11 @@ TinyPath.prototype.srcRootRelativeFilePathToRelativeFilePath = function( basePat
  * @return {string}
  */
 TinyPath.prototype.toSrcRootRelativeFilePath = function( basePath, filePath ){
-    return this.isRelativeFilePath( filePath ) ? this.relativeFilePathToSrcRootRelativeFilePath( basePath, filePath ) : filePath;
+    return this.isRelativeFilePath( filePath )
+               ? this.relativeFilePathToSrcRootRelativeFilePath( basePath, filePath ) :
+           this.isAbsoluteFilePath( filePath )
+               ? this.absoluteFilePathToSrcRootRelativeFilePath( filePath )
+               : filePath;
 };
 
 /**----------------------------------------------------------------------------
