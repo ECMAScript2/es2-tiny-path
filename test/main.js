@@ -33,7 +33,11 @@ compiler.run((exitCode, stdOut, stdErr) => {
             t.deepEqual(
                 path.rootRelativeURLToRelativeURL( '/1/2/3/4/5', '/1/2/3/json/weather.json' ),
                 '../json/weather.json'
-            )
+            );
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/1/2/3/4/5/', '/1/2/3/json/weather.json' ),
+                '../../json/weather.json'
+            );
         }
     );
     test('relativeURLToRootRelativeURL',
@@ -57,7 +61,7 @@ compiler.run((exitCode, stdOut, stdErr) => {
             t.deepEqual(
                 path.relativeURLToRootRelativeURL( '/1/2/3/4/5', '../../3/json/weather.json' ),
                 '/1/2/3/json/weather.json'
-            )
+            );
         }
     );
 });
