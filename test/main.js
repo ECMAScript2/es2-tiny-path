@@ -38,6 +38,31 @@ compiler.run((exitCode, stdOut, stdErr) => {
                 path.rootRelativeURLToRelativeURL( '/1/2/3/4/5/', '/1/2/3/json/weather.json' ),
                 '../../json/weather.json'
             );
+
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/labels/animal/', '/labels/#top' ),
+                '../#top'
+            );
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/labels/animal.html', '/labels/index.html#top' ),
+                './#top'
+            );
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/labels/animal.html', '/labels/#top' ),
+                './#top'
+            );
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/labels/', '/labels/#top' ),
+                '#top'
+            );
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/labels/index.html', '/labels/#top' ),
+                '#top'
+            );
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/labels/index.html#top', '/labels/' ),
+                './'
+            );
         }
     );
     test('relativeURLToRootRelativeURL',
@@ -46,6 +71,15 @@ compiler.run((exitCode, stdOut, stdErr) => {
                 path.relativeURLToRootRelativeURL( '/about/campany/', 'history.html#ddd' ),
                 '/about/campany/history.html#ddd'
             );
+            t.deepEqual(
+                path.relativeURLToRootRelativeURL( '/', 'index.html#ddd' ),
+                '/#ddd'
+            );
+            t.deepEqual(
+                path.relativeURLToRootRelativeURL( '/', '#ddd' ),
+                '/#ddd'
+            );
+
             t.deepEqual(
                 path.relativeURLToRootRelativeURL( '/', 'about/history.html' ),
                 '/about/history.html'

@@ -162,6 +162,14 @@ TinyPath.prototype.urlToFilePath = function( url ){
  * @param {string} filePath
  * @return {boolean}
  */
+TinyPath.prototype.filePathToFileName = function( filePath ){
+    return this.normalizeFilePath( filePath ).split( '/' ).pop();
+};
+
+/**
+ * @param {string} filePath
+ * @return {boolean}
+ */
 TinyPath.prototype.isAbsoluteFilePath = function( filePath ){
     if( TinyPath.DEFINE.DEBUG ){
         if( !this._absolutePathOfSrcRoot ){
@@ -285,6 +293,14 @@ TinyPath.prototype.toSrcRootRelativeFilePath = function( basePath, filePath ){
 /**----------------------------------------------------------------------------
  *   URL
  */
+
+/**
+ * @param {string} url
+ * @return {boolean}
+ */
+TinyPath.prototype.urlToFileName = function( url ){
+    return this.clearHash( url ).split( '/' ).pop() || 'index.html';
+};
 
 /**
  * @param {string} url
@@ -437,10 +453,13 @@ TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelati
                       )
                   );
 
+    if( !relativeURL && ( this.urlToFileName( basePath ) !== this.urlToFileName( rootRelativeURL ) || !targetHash ) ){
+        relativeURL = './';
+    };
     if( targetHash ){
         relativeURL += targetHash;
     };
-    return relativeURL ? relativeURL : './';
+    return relativeURL;
 };
 
 /**
