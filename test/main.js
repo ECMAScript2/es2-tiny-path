@@ -59,9 +59,10 @@ compiler.run((exitCode, stdOut, stdErr) => {
                 path.rootRelativeURLToRelativeURL( '/labels/index.html', '/labels/#top' ),
                 '#top'
             );
+
             t.deepEqual(
                 path.rootRelativeURLToRelativeURL( '/labels/index.html#top', '/labels/' ),
-                './'
+                ''
             );
         }
     );

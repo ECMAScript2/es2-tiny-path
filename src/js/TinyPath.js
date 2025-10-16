@@ -76,7 +76,7 @@ function _rootRelativePathToRelativePath( basePath, rootRelativePath ){
     baseName = basePathElements.pop();
 
     if( basePath === rootRelativePath ){
-        return baseName;
+        return '';
     };
 
     rootRelativePathElements = rootRelativePath.split( '/' );
@@ -263,7 +263,7 @@ TinyPath.prototype.relativeFilePathToSrcRootRelativeFilePath = function( basePat
 /**
  * @param {string} basePath
  * @param {string} rootRelativeFilePath
- * @return {string}
+ * @return {string} "": 同一ファイルの場合
  */
 TinyPath.prototype.srcRootRelativeFilePathToRelativeFilePath = function( basePath, rootRelativeFilePath ){
     if( TinyPath.DEFINE.DEBUG ){
@@ -429,7 +429,7 @@ TinyPath.prototype.relativeURLToRootRelativeURL = function( basePath, relativeUR
 /**
  * @param {string} basePath
  * @param {string} rootRelativeURL
- * @return {string}
+ * @return {string} "": 同一ファイルの場合, "./": 同一階層の index.html へ移動
  */
 TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelativeURL ){
     if( TinyPath.DEFINE.DEBUG ){
@@ -446,16 +446,17 @@ TinyPath.prototype.rootRelativeURLToRelativeURL = function( basePath, rootRelati
     if( hashIndex !== -1 ){
         targetHash = rootRelativeURL.substr( hashIndex );
     };
-    relativeURL = this.filePathToURL(
-                      _rootRelativePathToRelativePath(
-                          this.urlToFilePath( basePath ),
-                          this.urlToFilePath( rootRelativeURL )
-                      )
+    relativeURL = _rootRelativePathToRelativePath(
+                      this.urlToFilePath( basePath ),
+                      this.urlToFilePath( rootRelativeURL )
                   );
 
-    if( !relativeURL && ( this.urlToFileName( basePath ) !== this.urlToFileName( rootRelativeURL ) || !targetHash ) ){
+    if( relativeURL === 'index.html' ){
         relativeURL = './';
+    } else if( relativeURL ){
+        relativeURL = this.filePathToURL( relativeURL );
     };
+
     if( targetHash ){
         relativeURL += targetHash;
     };
