@@ -160,7 +160,7 @@ TinyPath.prototype.urlToFilePath = function( url ){
 
 /**
  * @param {string} filePath
- * @return {boolean}
+ * @return {string}
  */
 TinyPath.prototype.filePathToFileName = function( filePath ){
     return this.normalizeFilePath( filePath ).split( '/' ).pop();
@@ -296,7 +296,7 @@ TinyPath.prototype.toSrcRootRelativeFilePath = function( basePath, filePath ){
 
 /**
  * @param {string} url
- * @return {boolean}
+ * @return {string}
  */
 TinyPath.prototype.urlToFileName = function( url ){
     return this.clearHash( url ).split( '/' ).pop() || 'index.html';
