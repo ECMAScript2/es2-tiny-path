@@ -39,6 +39,15 @@ TinyPath.DEFINE.DEBUG = goog.define( 'TinyPath.DEFINE.DEBUG' , true );
  * @return {string}
  */
 function _relativePathToRootRelativePath( basePath, relativePath ){
+    if( TinyPath.DEFINE.DEBUG ){
+        if( TinyPath.prototype.supplementIndexHtml( basePath ) !== basePath ){
+            throw '_relativePathToRootRelativePath: Use this.supplementIndexHtml(url) before call.';
+        };
+        if( TinyPath.prototype.supplementIndexHtml( relativePath ) !== relativePath ){
+            throw '_relativePathToRootRelativePath: Use this.supplementIndexHtml(url) before call.';
+        };
+    };
+
     var originalRelativePath = relativePath;
     var basePathElements = basePath.split( '/' );
 
@@ -69,6 +78,15 @@ function _relativePathToRootRelativePath( basePath, relativePath ){
  * @return {string}
  */
 function _rootRelativePathToRelativePath( basePath, rootRelativePath ){
+    if( TinyPath.DEFINE.DEBUG ){
+        if( TinyPath.prototype.supplementIndexHtml( basePath ) !== basePath ){
+            throw '_rootRelativePathToRelativePath: Use this.supplementIndexHtml(url) before call.';
+        };
+        if( TinyPath.prototype.supplementIndexHtml( rootRelativePath ) !== rootRelativePath ){
+            throw '_rootRelativePathToRelativePath: Use this.supplementIndexHtml(url) before call.';
+        };
+    };
+
     var link = [], i = 0, skipCompare = false,
         basePathElements, baseName,
         rootRelativePathElements, targetName,
@@ -124,7 +142,7 @@ TinyPath.prototype.isAbsolutePath = function( filePathOrURL ){
  * @param {string} filePath
  * @return {string}
  */
-TinyPath.prototype.filePathToURL = function( filePath ){
+TinyPath.prototype.removeIndexHtml = function( filePath ){
     var rootRelativeURL = filePath.split( 'index.html' );
 
     // "/index.html" => ["/", ""] => "/"
@@ -139,17 +157,14 @@ TinyPath.prototype.filePathToURL = function( filePath ){
  * @param {string} url
  * @return {string}
  */
-TinyPath.prototype.urlToFilePath = function( url ){
+TinyPath.prototype.supplementIndexHtml = function( url ){
     if( TinyPath.DEFINE.DEBUG ){
         if( this.isAbsoluteURL( url ) ){
             throw url + ' is not a root relative path or relative URL!';
         };
-        if( this.normalizeURL( url ) !== url ){
-            throw 'urlToFilePath: url has url-search-params or hash-fragment! ' + url;
-        };
     };
 
-    var urlElements = this.normalizeURL( url ).split( '/' );
+    var urlElements = this.cleanURL( url ).split( '/' );
 
     // "/" => ["", ""] => "/index.html"
     // "/index.html/" => ["", "index.html", ""] => "/index.html/index.html"
@@ -303,7 +318,7 @@ TinyPath.prototype.toSrcRootRelativeFilePath = function( basePath, filePath ){
  * @return {string}
  */
 TinyPath.prototype.urlToFileName = function( url ){
-    return this.normalizeURL( url ).split( '/' ).pop() || 'index.html';
+    return this.cleanURL( url ).split( '/' ).pop() || 'index.html';
 };
 
 /**
@@ -339,11 +354,15 @@ TinyPath.prototype.isRelativeURL = function( url ){
 };
 
 /**
+ * remove "./", "index.html", ?searchParam=, #hash-fragment
+ * 
  * @param {string} url
  * @return {string}
  */
-TinyPath.prototype.normalizeURL = function( url ){
-    return url.split( '?' )[ 0 ].split( '#' )[ 0 ];
+TinyPath.prototype.cleanURL = function( url ){
+    url = this.removeIndexHtml( url.split( '?' )[ 0 ].split( '#' )[ 0 ] );
+
+    return 2 < url.length && url.substr( 0, 2 ) === './' ? url.substr( 2 ) : url;
 };
 
 /**
@@ -398,7 +417,7 @@ TinyPath.prototype.absoluteURLToRootRelativeURL = function( url ){
             url = url.substring( 5, len );
         };
     };
-    return url; // External Site URL
+    return url;
 };
 
 
@@ -418,7 +437,7 @@ TinyPath.prototype.rootRelativeURLToAbsoluteURL = function( url ){
         };
     };
 
-    return this._urlOrigin + url.substr( 1 ); // There is a “/” at the beginning.
+    return this._urlOrigin + this.cleanURL( url ).substr( 1 ) + this.getSearchParam( url ) + this.getHashFragment( url );
 };
 
 /**
@@ -436,16 +455,14 @@ TinyPath.prototype.relativeURLToRootRelativeURL = function( baseURL, relativeURL
         };
     };
 
-    var normalizedURL      = this.normalizeURL( relativeURL );
-    var searchParamAndhash = relativeURL.substr( normalizedURL.length );
-    var rootRelativeURL    = this.filePathToURL(
-                                 _relativePathToRootRelativePath(
-                                     this.urlToFilePath( this.normalizeURL( baseURL ) ),
-                                     this.urlToFilePath( normalizedURL )
-                                 )
-                             );
+    var rootRelativeURL = this.removeIndexHtml(
+                              _relativePathToRootRelativePath(
+                                  this.supplementIndexHtml( baseURL ),
+                                  this.supplementIndexHtml( relativeURL )
+                              )
+                          );
 
-    return rootRelativeURL + searchParamAndhash;
+    return rootRelativeURL + this.getSearchParam( relativeURL ) + this.getHashFragment( relativeURL );
 };
 
 /**
@@ -463,22 +480,20 @@ TinyPath.prototype.rootRelativeURLToRelativeURL = function( baseURL, rootRelativ
         };
     };
 
-    var normalizedURL = this.normalizeURL( rootRelativeURL );
-    var searchParam   = this.getSearchParam( rootRelativeURL );
-    var hashFragment  = this.getHashFragment( rootRelativeURL );
-    var relativeURL   = _rootRelativePathToRelativePath(
-                            this.urlToFilePath( this.normalizeURL( baseURL ) ),
-                            this.urlToFilePath( normalizedURL )
-                        );
-    var isIndex       = relativeURL === 'index.html';
+    var searchParam = this.getSearchParam( rootRelativeURL );
+    var relativeURL = _rootRelativePathToRelativePath(
+                          this.supplementIndexHtml( baseURL ),
+                          this.supplementIndexHtml( rootRelativeURL )
+                      );
+    var isIndex     = relativeURL === 'index.html';
 
     if( relativeURL && !isIndex ){
-        relativeURL = this.filePathToURL( relativeURL );
+        relativeURL = this.removeIndexHtml( relativeURL );
     } else if( isIndex || searchParam ){
         relativeURL = './';
     };
 
-    return relativeURL + searchParam + hashFragment;
+    return relativeURL + searchParam + this.getHashFragment( rootRelativeURL );
 };
 
 /**

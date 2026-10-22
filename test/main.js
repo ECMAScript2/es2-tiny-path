@@ -20,6 +20,74 @@ compiler.run((exitCode, stdOut, stdErr) => {
 
     const path = new TinyPath( '//example.com', __dirname );
 
+    test('urlToFilePath',
+        (t) => {
+            t.deepEqual(
+                path.supplementIndexHtml( '/' ),
+                '/index.html'
+            );
+
+            t.deepEqual(
+                path.supplementIndexHtml( '/about/campany/' ),
+                '/about/campany/index.html'
+            );
+
+            t.deepEqual(
+                path.supplementIndexHtml( './' ),
+                './index.html'
+            );
+        }
+    );
+
+    test('cleanURL',
+        (t) => {
+            t.deepEqual(
+                path.cleanURL( '/index.html#5' ),
+                '/'
+            );
+            t.deepEqual(
+                path.cleanURL( './?aaa' ),
+                './'
+            );
+            t.deepEqual(
+                path.cleanURL( './a.html#aaa' ),
+                'a.html'
+            );
+            t.deepEqual(
+                path.cleanURL( './index.html/index.html/index.html#5' ),
+                'index.html/index.html/'
+            );
+        }
+    );
+
+    test('absoluteURLToRootRelativeURL',
+        (t) => {
+            t.deepEqual(
+                path.absoluteURLToRootRelativeURL( '//example.com/' ),
+                '/'
+            );
+
+            t.deepEqual(
+                path.absoluteURLToRootRelativeURL( '//example.com/about/campany/' ),
+                '/about/campany/'
+            );
+        }
+    );
+
+    test('rootRelativeURLToAbsoluteURL',
+        (t) => {
+            t.deepEqual(
+                path.rootRelativeURLToAbsoluteURL( '/index.html#5' ),
+                '//example.com/#5'
+            );
+
+            t.deepEqual(
+                path.rootRelativeURLToAbsoluteURL( '/about/campany/?a=//#dede##' ),
+                '//example.com/about/campany/?a=//#dede##'
+            );
+        }
+    );
+
     test('rootRelativeURLToRelativeURL',
         (t) => {
             t.deepEqual(
@@ -39,6 +107,10 @@ compiler.run((exitCode, stdOut, stdErr) => {
                 '../../json/weather.json'
             );
 
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/about/campany/?aha??#', '/about/history.html#de' ),
+                '../history.html#de'
+            );
             t.deepEqual(
                 path.rootRelativeURLToRelativeURL( '/labels/animal/', '/labels/#top' ),
                 '../#top'
@@ -72,6 +144,21 @@ compiler.run((exitCode, stdOut, stdErr) => {
             t.deepEqual(
                 path.rootRelativeURLToRelativeURL( '/labels/index.html?k=//#a', '/labels/?a=//#top//' ),
                 './?a=//#top//'
+            );
+
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/index.html/index.html/', '/index.html/history.html' ),
+                '../history.html'
+            );
+
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/index.html/index.html/index.html', '/index.html/history.html' ),
+                '../history.html'
+            );
+
+            t.deepEqual(
+                path.rootRelativeURLToRelativeURL( '/index.html/index.html/index.html?a#0/#', '/index.html/history.html' ),
+                '../history.html'
             );
         }
     );
@@ -118,6 +205,19 @@ compiler.run((exitCode, stdOut, stdErr) => {
             t.deepEqual(
                 path.relativeURLToRootRelativeURL( '/?d=ji###', 'about/history.html?b=/./#c##??' ),
                 '/about/history.html?b=/./#c##??'
+            );
+
+            t.deepEqual(
+                path.relativeURLToRootRelativeURL( '/index.html/', 'history.html#ddd' ),
+                '/index.html/history.html#ddd'
+            );
+            t.deepEqual(
+                path.relativeURLToRootRelativeURL( '/index.html/index.html', 'history.html#ddd' ),
+                '/index.html/history.html#ddd'
+            );
+            t.deepEqual(
+                path.relativeURLToRootRelativeURL( '/index.html/index.html?a#/#', 'history.html#ddd' ),
+                '/index.html/history.html#ddd'
             );
         }
     );
