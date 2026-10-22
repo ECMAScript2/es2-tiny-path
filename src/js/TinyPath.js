@@ -40,11 +40,17 @@ TinyPath.DEFINE.DEBUG = goog.define( 'TinyPath.DEFINE.DEBUG' , true );
  */
 function _relativePathToRootRelativePath( basePath, relativePath ){
     if( TinyPath.DEFINE.DEBUG ){
+        if( TinyPath.prototype.normalizeFilePath( basePath ) !== basePath ){
+            throw 'Use this.normalizeFilePath(filePath) before call. ' + basePath;
+        };
+        if( TinyPath.prototype.normalizeFilePath( relativePath ) !== relativePath ){
+            throw 'Use this.normalizeFilePath(filePath) before call. ' + relativePath;
+        };
         if( TinyPath.prototype.supplementIndexHtml( basePath ) !== basePath ){
-            throw '_relativePathToRootRelativePath: Use this.supplementIndexHtml(url) before call.';
+            throw 'Use this.supplementIndexHtml(url) before call. ' + basePath;
         };
         if( TinyPath.prototype.supplementIndexHtml( relativePath ) !== relativePath ){
-            throw '_relativePathToRootRelativePath: Use this.supplementIndexHtml(url) before call.';
+            throw 'Use this.supplementIndexHtml(url) before call. ' + relativePath;
         };
     };
 
@@ -79,11 +85,17 @@ function _relativePathToRootRelativePath( basePath, relativePath ){
  */
 function _rootRelativePathToRelativePath( basePath, rootRelativePath ){
     if( TinyPath.DEFINE.DEBUG ){
+        if( TinyPath.prototype.normalizeFilePath( basePath ) !== basePath ){
+            throw 'Use this.normalizeFilePath(filePath) before call. ' + basePath;
+        };
+        if( TinyPath.prototype.normalizeFilePath( rootRelativePath ) !== rootRelativePath ){
+            throw 'Use this.normalizeFilePath(filePath) before call. ' + rootRelativePath;
+        };
         if( TinyPath.prototype.supplementIndexHtml( basePath ) !== basePath ){
-            throw '_rootRelativePathToRelativePath: Use this.supplementIndexHtml(url) before call.';
+            throw 'Use this.supplementIndexHtml(url) before call. ' + basePath;
         };
         if( TinyPath.prototype.supplementIndexHtml( rootRelativePath ) !== rootRelativePath ){
-            throw '_rootRelativePathToRelativePath: Use this.supplementIndexHtml(url) before call.';
+            throw 'Use this.supplementIndexHtml(url) before call. ' + rootRelativePath;
         };
     };
 
