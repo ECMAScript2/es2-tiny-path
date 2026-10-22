@@ -9,7 +9,7 @@ declare class TinyPath {
     filePathToURL(filePath:string):string;
     urlToFilePath(url:string):string;
 
-    filePathToFileName(url:string):string;
+    filePathToFileName(filePath:string):string;
     isAbsoluteFilePath(filePath:string):boolean;
     isRootRelativeFilePath(filePath:string):boolean;
     isRelativeFilePath(filePath:string):boolean;
@@ -25,11 +25,13 @@ declare class TinyPath {
     isNetworkPathReference(url:string):boolean;
     isRootRelativeURL(url:string):boolean;
     isRelativeURL(url:string):boolean;
-    clearHash(url:string):string;
+    normalizeURL(url:string):string;
+    getSearchParam(url:string):string;
+    getHashFragment(url:string):string;
     absoluteURLToRootRelativeURL(url:string):string;
     rootRelativeURLToAbsoluteURL(url:string):string;
-    relativeURLToRootRelativeURL(basePath:string, relativeURL:string):string;
-    rootRelativeURLToRelativeURL(basePath:string, rootRelativeURL:string):string;
-    toRootRelativeURL(basePath:string, url:string):string;
-    toRelativeURL(basePath:string, url:string):string;
+    relativeURLToRootRelativeURL(baseURL:string, relativeURL:string):string;
+    rootRelativeURLToRelativeURL(baseURL:string, rootRelativeURL:string):string;
+    toRootRelativeURL(baseURL:string, url:string):string;
+    toRelativeURL(baseURL:string, url:string):string;
 }
