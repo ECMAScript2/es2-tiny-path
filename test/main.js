@@ -20,7 +20,7 @@ compiler.run((exitCode, stdOut, stdErr) => {
 
     const path = new TinyPath( '//example.com', __dirname );
 
-    test('urlToFilePath',
+    test('supplementIndexHtml',
         (t) => {
             t.deepEqual(
                 path.supplementIndexHtml( '/' ),
